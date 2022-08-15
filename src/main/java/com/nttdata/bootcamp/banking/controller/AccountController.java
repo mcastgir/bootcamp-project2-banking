@@ -16,7 +16,6 @@ package com.nttdata.bootcamp.banking.controller;
 
 import com.nttdata.bootcamp.banking.model.document.Account;
 import com.nttdata.bootcamp.banking.service.AccountService;
-import com.nttdata.bootcamp.banking.util.ApiResponse;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
@@ -41,12 +40,9 @@ public class AccountController {
      * @return Mono retorna el Account, tipo Mono
      */
     @PostMapping
-    public Mono<ResponseEntity<ApiResponse>> create(@RequestBody Account account){
-        Mono<Account> accountMono = this.accountService.insert(account);
-        return accountMono.map(data -> ResponseEntity.ok(ApiResponse.success("Insert Account",
-                "Successful result", data)))
-                .onErrorResume(e -> Mono.just(new ResponseEntity<>(ApiResponse.failed(e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR.value()),
-                        HttpStatus.INTERNAL_SERVER_ERROR)));
+    public Mono<ResponseEntity<Account>> create(@RequestBody Account account){
+        return this.accountService.insert(account)
+                .map(a -> new ResponseEntity<>(a, HttpStatus.OK));
     }
 
     /**
@@ -54,12 +50,9 @@ public class AccountController {
      * @return Mono retorna el Account, tipo Mono
      */
     @PutMapping
-    public Mono<ResponseEntity<ApiResponse>> update(@RequestBody Account account){
-        Mono<Account> accountMono = this.accountService.update(account);
-        return accountMono.map(data -> ResponseEntity.ok(ApiResponse.success("Update Account",
-                        "Successful result", data)))
-                .onErrorResume(e -> Mono.just(new ResponseEntity<>(ApiResponse.failed(e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR.value()),
-                        HttpStatus.INTERNAL_SERVER_ERROR)));
+    public Mono<ResponseEntity<Account>> update(@RequestBody Account account){
+        return this.accountService.update(account)
+                .map(a -> new ResponseEntity<>(a, HttpStatus.OK));
     }
 
     /**
@@ -67,12 +60,9 @@ public class AccountController {
      * @return Mono retorna el Void, tipo Mono
      */
     @DeleteMapping("/{id}")
-    public Mono<ResponseEntity<ApiResponse>> delete(@PathVariable String id) {
-        Mono<Void> voidMono = this.accountService.delete(id);
-        return voidMono.map(data -> ResponseEntity.ok(ApiResponse.success("Delete Account",
-                        "Successful result", data)))
-                .onErrorResume(e -> Mono.just(new ResponseEntity<>(ApiResponse.failed(e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR.value()),
-                        HttpStatus.INTERNAL_SERVER_ERROR)));
+    public Mono<ResponseEntity<Void>> delete(@PathVariable String id) {
+        return this.accountService.delete(id)
+                .map(v -> new ResponseEntity<>(v, HttpStatus.OK));
     }
 
     /**
@@ -80,12 +70,11 @@ public class AccountController {
      * @return Mono retorna el Account, tipo String
      */
     @GetMapping("/{id}")
-    public Mono<ResponseEntity<ApiResponse>> find(@PathVariable String id) {
-        Mono<Account> accountMono = this.accountService.find(id);
-        return accountMono.map(data -> ResponseEntity.ok(ApiResponse.success("Find Account",
-                        "Successful result", data)))
-                .onErrorResume(e -> Mono.just(new ResponseEntity<>(ApiResponse.failed(e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR.value()),
-                        HttpStatus.INTERNAL_SERVER_ERROR)));
+    public Mono<ResponseEntity<Account>> find(@PathVariable String id) {
+        return this.accountService.find(id)
+                .map(account -> ResponseEntity.ok()
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .body(account));
     }
 
     /**
@@ -93,19 +82,17 @@ public class AccountController {
      * @return Mono retorna el Account, tipo String
      */
     @GetMapping("/findByAccountNumber/{accountNumber}")
-    public Mono<ResponseEntity<ApiResponse>> findByAccountNumber(@PathVariable String accountNumber) {
-        Mono<Account> accountMono = this.accountService.findByAccountNumber(accountNumber);
-        return accountMono.map(data -> ResponseEntity.ok(ApiResponse.success("Find By AccountNumber Account",
-                        "Successful result", data)))
-                .onErrorResume(e -> Mono.just(new ResponseEntity<>(ApiResponse.failed(e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR.value()),
-                        HttpStatus.INTERNAL_SERVER_ERROR)));
+    public Mono<ResponseEntity<Account>> findByAccountNumber(@PathVariable String accountNumber) {
+        return this.accountService.findByAccountNumber(accountNumber)
+                .map(account -> ResponseEntity.ok()
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .body(account));
     }
 
-    /*@GetMapping("/findAllByCodeClient/{code}")
-    public Flux<Account> findAllByCodeClient(@PathVariable String code) {
-        return this.accountService.findByCodeClient(code);
-    }*/
-
+    /**
+     * Método que realiza la acción buscar datos por código del cliente
+     * @return Mono retorna el Account, tipo String
+     */
     @GetMapping("/findAllByCodeClient/{code}")
     public Mono<ResponseEntity<Flux<Account>>> findAllByCodeClient(@PathVariable String code) {
         return Mono.just(
@@ -113,10 +100,6 @@ public class AccountController {
                         .contentType(MediaType.APPLICATION_JSON)
                         .body(this.accountService.findByCodeClient(code))
         );
-        /*return Mono.just(ResponseEntity.ok(ApiResponse.success("Find By AccountNumber Account",
-                "Successful result", this.accountService.findByCodeClient(code))))
-                .onErrorResume(e -> Mono.just(new ResponseEntity<>(ApiResponse.failed(e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR.value()),
-                        HttpStatus.INTERNAL_SERVER_ERROR)));*/
     }
 
     /**
@@ -124,8 +107,12 @@ public class AccountController {
      * @return Flux retorna el Account, tipo Flux
      */
     @GetMapping
-    public Flux<Account> findAll() {
-        return this.accountService.findAll();
+    public Mono<ResponseEntity<Flux<Account>>> findAll() {
+        return Mono.just(
+                ResponseEntity.ok()
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .body(this.accountService.findAll())
+        );
     }
 
 }

@@ -2,8 +2,6 @@ package com.nttdata.bootcamp.banking.util;
 
 import lombok.Data;
 import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
-import reactor.core.publisher.Mono;
 
 @Data
 public class ApiResponse {
@@ -47,6 +45,10 @@ public class ApiResponse {
 
     public static ApiResponse failed(String message) {
         return ApiResponse.failed(message, HttpStatus.INTERNAL_SERVER_ERROR.value());
+    }
+
+    public static ApiResponse failed(String title, String message) {
+        return ApiResponse.failed(title, message, HttpStatus.INTERNAL_SERVER_ERROR.value());
     }
 
 }

@@ -17,6 +17,9 @@ package com.nttdata.bootcamp.banking.controller;
 import com.nttdata.bootcamp.banking.model.document.MovementType;
 import com.nttdata.bootcamp.banking.service.MovementTypeService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
@@ -37,8 +40,9 @@ public class MovementTypeController {
      * @return Mono retorna el MovementType, tipo Mono
      */
     @PostMapping
-    public Mono<MovementType> create(@RequestBody MovementType movementType){
-        return this.movementTypeService.insert(movementType);
+    public Mono<ResponseEntity<MovementType>> create(@RequestBody MovementType movementType){
+        return this.movementTypeService.insert(movementType)
+                .map(m -> new ResponseEntity<>(m, HttpStatus.OK));
     }
 
     /**
@@ -46,8 +50,9 @@ public class MovementTypeController {
      * @return Mono retorna el MovementType, tipo Mono
      */
     @PutMapping
-    public Mono<MovementType> update(@RequestBody MovementType movementType){
-        return this.movementTypeService.update(movementType);
+    public Mono<ResponseEntity<MovementType>> update(@RequestBody MovementType movementType){
+        return this.movementTypeService.update(movementType)
+                .map(m -> new ResponseEntity<>(m, HttpStatus.OK));
     }
 
     /**
@@ -55,8 +60,9 @@ public class MovementTypeController {
      * @return Mono retorna el Void, tipo Mono
      */
     @DeleteMapping("/{id}")
-    public Mono<Void> delete(@PathVariable String id) {
-        return this.movementTypeService.delete(id);
+    public Mono<ResponseEntity<Void>> delete(@PathVariable String id) {
+        return this.movementTypeService.delete(id)
+                .map(v -> new ResponseEntity<>(v, HttpStatus.OK));
     }
 
     /**
@@ -64,8 +70,11 @@ public class MovementTypeController {
      * @return Mono retorna el MovementType, tipo String
      */
     @GetMapping("/{id}")
-    public Mono<MovementType> find(@PathVariable String id) {
-        return this.movementTypeService.find(id);
+    public Mono<ResponseEntity<MovementType>> find(@PathVariable String id) {
+        return this.movementTypeService.find(id)
+                .map(movementType -> ResponseEntity.ok()
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .body(movementType));
     }
 
     /**
@@ -73,8 +82,11 @@ public class MovementTypeController {
      * @return Mono retorna el MovementType, tipo String
      */
     @GetMapping("/findByCode/{code}")
-    public Mono<MovementType> findByCode(@PathVariable String code) {
-        return this.movementTypeService.findByCode(code);
+    public Mono<ResponseEntity<MovementType>> findByCode(@PathVariable String code) {
+        return this.movementTypeService.findByCode(code)
+                .map(movementType -> ResponseEntity.ok()
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .body(movementType));
     }
 
     /**
@@ -82,8 +94,11 @@ public class MovementTypeController {
      * @return Flux retorna el MovementType, tipo Flux
      */
     @GetMapping
-    public Flux<MovementType> findAll() {
-        return this.movementTypeService.findAll();
+    public Mono<ResponseEntity<Flux<MovementType>>> findAll() {
+        return Mono.just(
+                ResponseEntity.ok()
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .body(this.movementTypeService.findAll()));
     }
 
 }
