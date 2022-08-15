@@ -2,7 +2,7 @@ package com.nttdata.bootcamp.banking.config;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.nttdata.bootcamp.client.util.ApiResponse;
+import com.nttdata.bootcamp.banking.util.ApiResponse;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.web.reactive.error.ErrorWebExceptionHandler;
 import org.springframework.context.annotation.Configuration;
