@@ -14,8 +14,10 @@
 
 package com.nttdata.bootcamp.banking.service.impl;
 
+import com.nttdata.bootcamp.banking.model.dao.AccountDao;
 import com.nttdata.bootcamp.banking.model.dao.HolderDao;
 import com.nttdata.bootcamp.banking.model.document.Holder;
+import com.nttdata.bootcamp.banking.service.AccountService;
 import com.nttdata.bootcamp.banking.service.HolderService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -23,6 +25,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
+
+import java.util.Date;
 
 /**
  * Clase para los métodos de la implementación de servicio del titular.
@@ -36,6 +40,8 @@ public class HolderServiceImpl implements HolderService {
     /** Declaración de la clase dao */
     @Autowired
     private HolderDao holderDao;
+    @Autowired
+    private AccountService accountService;
 
     /**
      * Método que realiza la acción insertar datos del document
@@ -43,6 +49,7 @@ public class HolderServiceImpl implements HolderService {
      */
     @Override
     public Mono<Holder> insert(Holder holder) {
+        holder.setDateRegister(new Date());
         return holderDao.save(holder)
                 .doFirst(() -> log.info("Begin Insert Holder"))
                 .doOnNext(h -> log.info(h.toString()))
