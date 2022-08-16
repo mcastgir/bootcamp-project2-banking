@@ -17,6 +17,9 @@ package com.nttdata.bootcamp.banking.controller;
 import com.nttdata.bootcamp.banking.model.document.AccountState;
 import com.nttdata.bootcamp.banking.service.AccountStateService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
@@ -37,8 +40,9 @@ public class AccountStateController {
      * @return Mono retorna el AccountState, tipo Mono
      */
     @PostMapping
-    public Mono<AccountState> create(@RequestBody AccountState accountState){
-        return this.accountStateService.insert(accountState);
+    public Mono<ResponseEntity<AccountState>> create(@RequestBody AccountState accountState){
+        return this.accountStateService.insert(accountState)
+                .map(a -> new ResponseEntity<>(a, HttpStatus.OK));
     }
 
     /**
@@ -46,8 +50,9 @@ public class AccountStateController {
      * @return Mono retorna el AccountState, tipo Mono
      */
     @PutMapping
-    public Mono<AccountState> update(@RequestBody AccountState accountState){
-        return this.accountStateService.update(accountState);
+    public Mono<ResponseEntity<AccountState>> update(@RequestBody AccountState accountState){
+        return this.accountStateService.update(accountState)
+                .map(a -> new ResponseEntity<>(a, HttpStatus.OK));
     }
 
     /**
@@ -55,8 +60,9 @@ public class AccountStateController {
      * @return Mono retorna el Void, tipo Mono
      */
     @DeleteMapping("/{id}")
-    public Mono<Void> delete(@PathVariable String id) {
-        return this.accountStateService.delete(id);
+    public Mono<ResponseEntity<Void>> delete(@PathVariable String id) {
+        return this.accountStateService.delete(id)
+                .map(v -> new ResponseEntity<>(v, HttpStatus.OK));
     }
 
     /**
@@ -64,8 +70,11 @@ public class AccountStateController {
      * @return Mono retorna el AccountState, tipo String
      */
     @GetMapping("/{id}")
-    public Mono<AccountState> find(@PathVariable String id) {
-        return this.accountStateService.find(id);
+    public Mono<ResponseEntity<AccountState>> find(@PathVariable String id) {
+        return this.accountStateService.find(id)
+                .map(accountState -> ResponseEntity.ok()
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .body(accountState));
     }
 
     /**
@@ -73,8 +82,11 @@ public class AccountStateController {
      * @return Mono retorna el AccountState, tipo String
      */
     @GetMapping("/findByCode/{code}")
-    public Mono<AccountState> findByCode(@PathVariable String code) {
-        return this.accountStateService.findByCode(code);
+    public Mono<ResponseEntity<AccountState>> findByCode(@PathVariable String code) {
+        return this.accountStateService.findByCode(code)
+                .map(accountState -> ResponseEntity.ok()
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .body(accountState));
     }
 
     /**
@@ -82,8 +94,11 @@ public class AccountStateController {
      * @return Flux retorna el AccountState, tipo Flux
      */
     @GetMapping
-    public Flux<AccountState> findAll() {
-        return this.accountStateService.findAll();
+    public Mono<ResponseEntity<Flux<AccountState>>> findAll() {
+        return Mono.just(
+                ResponseEntity.ok()
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .body(this.accountStateService.findAll()));
     }
 
 }

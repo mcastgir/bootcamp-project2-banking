@@ -13,6 +13,5 @@ spring:
 project:
   url:
     server:
-      client: http://localhost:8086
-      product: http://localhost:8087
+      api-gateway: http://localhost:8090
 

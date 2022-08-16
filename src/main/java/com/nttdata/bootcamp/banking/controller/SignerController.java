@@ -17,6 +17,9 @@ package com.nttdata.bootcamp.banking.controller;
 import com.nttdata.bootcamp.banking.model.document.Signer;
 import com.nttdata.bootcamp.banking.service.SignerService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
@@ -37,8 +40,9 @@ public class SignerController {
      * @return Mono retorna el Signer, tipo Mono
      */
     @PostMapping
-    public Mono<Signer> create(@RequestBody Signer signer){
-        return this.signerService.insert(signer);
+    public Mono<ResponseEntity<Signer>> create(@RequestBody Signer signer){
+        return this.signerService.insert(signer)
+                .map(s -> new ResponseEntity<>(s, HttpStatus.OK));
     }
 
     /**
@@ -46,8 +50,9 @@ public class SignerController {
      * @return Mono retorna el Signer, tipo Mono
      */
     @PutMapping
-    public Mono<Signer> update(@RequestBody Signer signer){
-        return this.signerService.update(signer);
+    public Mono<ResponseEntity<Signer>> update(@RequestBody Signer signer){
+        return this.signerService.update(signer)
+                .map(s -> new ResponseEntity<>(s, HttpStatus.OK));
     }
 
     /**
@@ -55,8 +60,9 @@ public class SignerController {
      * @return Mono retorna el Void, tipo Mono
      */
     @DeleteMapping("/{id}")
-    public Mono<Void> delete(@PathVariable String id) {
-        return this.signerService.delete(id);
+    public Mono<ResponseEntity<Void>> delete(@PathVariable String id) {
+        return this.signerService.delete(id)
+                .map(v -> new ResponseEntity<>(v, HttpStatus.OK));
     }
 
     /**
@@ -64,8 +70,11 @@ public class SignerController {
      * @return Mono retorna el Signer, tipo String
      */
     @GetMapping("/{id}")
-    public Mono<Signer> find(@PathVariable String id) {
-        return this.signerService.find(id);
+    public Mono<ResponseEntity<Signer>> find(@PathVariable String id) {
+        return this.signerService.find(id)
+                .map(signer -> ResponseEntity.ok()
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .body(signer));
     }
 
     /**
@@ -73,8 +82,11 @@ public class SignerController {
      * @return Flux retorna el Signer, tipo Flux
      */
     @GetMapping
-    public Flux<Signer> findAll() {
-        return this.signerService.findAll();
+    public Mono<ResponseEntity<Flux<Signer>>> findAll() {
+        return Mono.just(
+                ResponseEntity.ok()
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .body(this.signerService.findAll()));
     }
 
 }
