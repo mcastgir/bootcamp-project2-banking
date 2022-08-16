@@ -16,10 +16,13 @@ package com.nttdata.bootcamp.banking.model.dao;
 
 import com.nttdata.bootcamp.banking.model.document.Holder;
 import org.springframework.data.mongodb.repository.ReactiveMongoRepository;
+import reactor.core.publisher.Mono;
 
 /**
  * Clase de tipo document para obtener o establecer los datos de cada atributo.
  */
 public interface HolderDao extends ReactiveMongoRepository<Holder, String> {
+
+    Mono<Holder> findByCodePersonAndAccountNumber(String codePerson, String accountNumber);
 
 }

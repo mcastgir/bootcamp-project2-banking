@@ -1,17 +1,8 @@
 spring:
   application:
     name: banking
-  data:
-    mongodb:
-      uri: mongodb://localhost:27017/db_bank_banking
   cloud:
     config:
       uri: http://localhost:8084
       username: root
       password: rHQPJeecA3YTdVkX
-
-project:
-  url:
-    server:
-      api-gateway: http://localhost:8090
-
