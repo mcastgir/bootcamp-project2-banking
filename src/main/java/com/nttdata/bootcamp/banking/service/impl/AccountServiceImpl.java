@@ -22,6 +22,7 @@ import com.nttdata.bootcamp.banking.service.ProductService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
@@ -72,6 +73,8 @@ public class AccountServiceImpl implements AccountService {
                                             if(!flag) {
                                                 return accountDao.save(account);
                                             }else {
+                                                /*return Mono.just(ResponseEntity.badRequest()
+                                                        .body("Ya existe una cuenta bancaria de ese tipo para ese cliente"));*/
                                                 return Mono.error(new RuntimeException("Ya existe una cuenta bancaria de ese tipo para ese cliente"));
                                             }
                                         });

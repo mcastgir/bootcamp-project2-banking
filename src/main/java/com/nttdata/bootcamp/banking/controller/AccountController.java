@@ -16,6 +16,9 @@ package com.nttdata.bootcamp.banking.controller;
 
 import com.nttdata.bootcamp.banking.model.document.Account;
 import com.nttdata.bootcamp.banking.service.AccountService;
+import com.nttdata.bootcamp.banking.util.ApiResponse;
+import io.github.resilience4j.circuitbreaker.CallNotPermittedException;
+import io.github.resilience4j.circuitbreaker.annotation.CircuitBreaker;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
@@ -40,9 +43,15 @@ public class AccountController {
      * @return Mono retorna el Account, tipo Mono
      */
     @PostMapping
+    @CircuitBreaker(name = "createAccountCB", fallbackMethod = "fallbackCreateAccount")
     public Mono<ResponseEntity<Account>> create(@RequestBody Account account){
         return this.accountService.insert(account)
                 .map(a -> new ResponseEntity<>(a, HttpStatus.OK));
+    }
+
+    public Mono<ResponseEntity<String>> fallbackCreateAccount(Account account, CallNotPermittedException e) {
+        return Mono.just(new ResponseEntity<>("Creación de Cuentas no disponible",
+                HttpStatus.INTERNAL_SERVER_ERROR));
     }
 
     /**
@@ -98,8 +107,7 @@ public class AccountController {
         return Mono.just(
                 ResponseEntity.ok()
                         .contentType(MediaType.APPLICATION_JSON)
-                        .body(this.accountService.findByCodeClient(code))
-        );
+                        .body(this.accountService.findByCodeClient(code)));
     }
 
     /**

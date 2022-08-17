@@ -19,11 +19,12 @@ public class ProductServiceImpl implements ProductService {
     private static final Logger LOGGER = LoggerFactory.getLogger(ProductServiceImpl.class);
 
     @Autowired
-    private WebClient webClient;
+    @Qualifier("WcProduct")
+    private WebClient wcProduct;
 
     @Override
     public Mono<Product> findByCode(String code) {
-        return webClient.get()
+        return wcProduct.get()
                 .uri (API_PRODUCT.concat("/findByCode/").concat(code))
                 .retrieve()
                 .bodyToMono(Product.class)

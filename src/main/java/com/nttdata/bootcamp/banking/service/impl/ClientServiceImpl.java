@@ -19,11 +19,12 @@ public class ClientServiceImpl implements ClientService {
     private static final Logger LOGGER = LoggerFactory.getLogger(ProductServiceImpl.class);
 
     @Autowired
-    private WebClient webClient;
+    @Qualifier("WcClient")
+    private WebClient wcClient;
 
     @Override
     public Mono<Client> findByCode(String code) {
-        return webClient.get()
+        return wcClient.get()
                 .uri (API_CLIENT.concat("/findByCode/").concat(code))
                 .retrieve()
                 .bodyToMono(Client.class)

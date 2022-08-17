@@ -15,14 +15,25 @@ import org.springframework.web.reactive.function.client.WebClient;
 @EnableWebFlux
 public class WebFluxConfig implements WebFluxConfigurer {
 
-    @Value("${project.url.server.api-gateway}")
-    private String urlServerApiGateway;
+    @Value("${project.url.server.client}")
+    private String urlServerClient;
+    @Value("${project.url.server.product}")
+    private String urlServerProduct;
 
     private static final Logger log = LoggerFactory.getLogger(WebFluxConfig.class);
-    @Bean
+
+    @Bean(name = "WcClient")
     public WebClient getWcClient () {
         return WebClient.builder ()
-                .baseUrl (urlServerApiGateway)
+                .baseUrl (urlServerClient)
+                .defaultHeader (HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON_VALUE)
+                .build();
+    }
+
+    @Bean(name = "WcProduct")
+    public WebClient getWcProduct () {
+        return WebClient.builder ()
+                .baseUrl (urlServerProduct)
                 .defaultHeader (HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON_VALUE)
                 .build();
     }
