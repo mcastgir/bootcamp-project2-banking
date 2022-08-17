@@ -23,15 +23,21 @@ public class GlobalErrorHandler implements ErrorWebExceptionHandler {
     public Mono<Void> handle(ServerWebExchange serverWebExchange, Throwable throwable) {
         DataBufferFactory dataBufferFactory = serverWebExchange.getResponse().bufferFactory();
         DataBuffer dataBuffer = null;
-        try {
-            dataBuffer = dataBufferFactory.wrap(objectMapper
-                    .writeValueAsBytes(ApiResponse.failed("Error Message",
-                            throwable.getMessage())));
-        } catch (JsonProcessingException ex) {
-            dataBuffer = dataBufferFactory.wrap(ex.getMessage().getBytes());
+        if (throwable instanceof Exception) {
+            try {
+                dataBuffer = dataBufferFactory.wrap(objectMapper
+                        .writeValueAsBytes(ApiResponse.failed("Error Message",
+                                throwable.getMessage())));
+            } catch (JsonProcessingException ex) {
+                dataBuffer = dataBufferFactory.wrap(ex.getMessage().getBytes());
+            }
+            serverWebExchange.getResponse().setStatusCode(HttpStatus.INTERNAL_SERVER_ERROR);
+            serverWebExchange.getResponse().getHeaders().setContentType(MediaType.APPLICATION_JSON);
+            return serverWebExchange.getResponse().writeWith(Mono.just(dataBuffer));
         }
         serverWebExchange.getResponse().setStatusCode(HttpStatus.INTERNAL_SERVER_ERROR);
         serverWebExchange.getResponse().getHeaders().setContentType(MediaType.APPLICATION_JSON);
+        dataBuffer = dataBufferFactory.wrap("Unknown error".getBytes());
         return serverWebExchange.getResponse().writeWith(Mono.just(dataBuffer));
     }
 
